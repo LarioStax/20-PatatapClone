@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>$tax Pat</title>
+	<script type="text/javascript" src="paper-full.js"></script>
+	<link rel="stylesheet" type="text/css" href="patatap.css">
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.3/howler.js"></script>
+	<script type="text/javascript" src="keyObject.js"></script>
+
+	<!-- Script is in HTML due to CORS :( ) -->
+	<script type="text/paperscript" canvas="myCanvas">
+
+		//array where we keep circles to be able to animate each one
+		var circlesArray = [];
+
+		function onKeyDown(event) {
+			if(keyData[event.key]) {
+				//sets the point bottom right of the screen)
+				var maxPoint = new Point(view.size.width, view.size.height);
+				//gives a point with a random x and y values between 0 and 1
+				var randomPoint = Point.random();
+				//gives a point at random location between 0/0 and max width/height
+				var finalPoint = maxPoint * randomPoint;
+
+				//creates a new circle with 10 radius and orange color at the final point
+				var newCircle = new Path.Circle(finalPoint, 100);
+				//make the circle of the color from the corresponding object in keyData object 
+				newCircle.fillColor = keyData[event.key].color;
+				//play the sound from the corresponding object in keyData from keyObject.js file
+				keyData[event.key].sound.play();
+				//push each new Circle into the array
+				circlesArray.push(newCircle);
+				//get width and height of the view window
+				//console.log("width: " + view.size.width + ", height: " + view.size.height )
+				//array get's longer and longer? should get cleaned up somehow!
+				console.log(circlesArray.length);				
+			}
+
+		}
+
+		//animating the circles to change color and fade out (they stay in array!)
+		function onFrame(event) {
+			for (i=0; i<circlesArray.length; i++) {
+				circlesArray[i].fillColor.hue += 1;
+				circlesArray[i].scale(.9);
+				//removing the circles from array if their area is smaller than 1
+				if (circlesArray[i].area < 1) {
+					circlesArray[i].remove(); //removes circle from the canvas
+					circlesArray.splice(i, 1); //removes circle from the array
+				}
+			}
+		}
+
+
+
+	</script>
+</head>
+<body>
+	<canvas id="myCanvas"></canvas>
+</body>
+</html>
